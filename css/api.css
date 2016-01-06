@@ -1,0 +1,86 @@
+body {
+  border-left: 18em solid #333333;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 12pt;
+  margin: 0 0 0 0;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-top: 0;
+  padding-bottom: 0;
+  position: absolute;
+  top: 0;
+}
+body > ul {
+  display: block;
+  font-size: 14px;
+  left: 0;
+  margin-left: 0 !important;
+  padding-left: 1em !important;
+  position: fixed;
+  text-transform: uppercase;
+  width: 20em;
+}
+body > ul > ul > li {
+  padding-bottom: 0.5em;
+}
+body > ul > ul > li > a {
+  color: #aaa;
+  line-height: 2;
+}
+body ul {
+  margin-bottom: 0;
+  margin-left: 1em;
+  list-style: none;
+  padding-left: 0px;
+}
+body ul ul li {
+  font-size: 12px;
+  text-transform: none;
+}
+a {
+  color: #39c;
+  text-decoration: none;
+}
+h1#table-of-contents {
+  display: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 2px;
+  border: 1px solid #d8d8d8;
+}
+th,
+td {
+  border-collapse: collapse;
+  border-spacing: 2px;
+  border: 1px solid #d8d8d8;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  vertical-align: middle;
+}
+tr:nth-child(even) {
+  background: #f8f8f8;
+}
+code {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 10pt;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+pre code {
+  display: block;
+  line-height: 1.45;
+  padding: 1.5em 1.5em 1.5em 1.5em;
+}
+@media (max-width: 650px) {
+  body {
+    border-left: none;
+  }
+  body > ul {
+    left: -20em;
+  }
+}
