@@ -1,0 +1,3 @@
+[submodule "heim"]
+	path = heim
+	url = git@github.com:euphoria-io/heim.git

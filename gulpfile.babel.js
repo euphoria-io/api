@@ -45,7 +45,7 @@ gulp.task('api-less', () => {
 })
 
 gulp.task('markdown', () => {
-  gulp.src(['./api.md'])
+  gulp.src(['./heim/doc/api.md'])
     .pipe(tap((file, t) => {
       if (file.isStream()) {
         this.emit('error', new gutil.PluginError('markdown', 'stream not supported'))
