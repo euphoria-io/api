@@ -1,7 +1,7 @@
 @base-font-size: 12pt;
 @code-font-size: 10pt;
 @mobile-breakpoint: 650px;
-@toc-width: 20em;
+@toc-width: 15em;
 
 body {
     border-left: (@toc-width)-2em solid #333;
@@ -18,8 +18,12 @@ body {
     & > ul {
         display: block;
         font-size: 14px;
+        height: 100%;
         left: 0;
         margin-left: 0 !important;
+        margin-top: 0;
+        overflow-x: scroll;
+        overflow-y: scroll;
         padding-left: 1em !important;
         position: fixed;
         text-transform: uppercase;
