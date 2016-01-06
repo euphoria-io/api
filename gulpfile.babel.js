@@ -54,7 +54,6 @@ gulp.task('markdown', () => {
       let content = marked(file.contents.toString())
       return gulp.src(['./index.html'])
         .pipe(fileinclude({context: {api: content}}))
-        //.pipe(rename('index.html'))
         .pipe(gulp.dest(apiStaticDest))
     }))
 })
@@ -73,5 +72,13 @@ gulp.task('serve', ['statics'], serve({
   },
 }))
 
+gulp.task('watch', () => {
+  watching = true
+  gulp.watch('./index.html', ['markdown'])
+  gulp.watch('./heim/doc/api.md', ['markdown'])
+  gulp.watch('./*.less', ['api-less'])
+})
+
 gulp.task('default', ['statics'])
-gulp.task('develop', ['serve', 'default'])
+gulp.task('develop', ['serve', 'watch'])
+
