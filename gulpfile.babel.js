@@ -19,7 +19,6 @@ const apiStaticDest = './build'
 marked.setOptions({
   renderer: new marked.Renderer(),
   gfm: true,
-  breaks: true,
   smartypants: true,
   tables: true,
 })
