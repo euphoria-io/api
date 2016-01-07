@@ -40,7 +40,7 @@ function handleError(title) {
   }
 }
 
-gulp.task('api-less', () => {
+gulp.task('css', () => {
   gulp.src(['./css/*.less'])
     .pipe(less())
     .on('error', handleError('LESS error'))
@@ -49,7 +49,12 @@ gulp.task('api-less', () => {
     .pipe(gulp.dest(apiStaticDest + '/css'))
 })
 
-gulp.task('js', ['api-less', 'markdown'], () => {
+gulp.task('img', () => {
+  gulp.src(['./heim/art/logo-active.svg', './heim/art/logo-active-favicon.svg'])
+    .pipe(gulp.dest(apiStaticDest + '/img'))
+})
+
+gulp.task('js', ['css', 'md'], () => {
   browserify('./js/api.js', {debug: true})
     .transform(babelify, {presets: ['es2015', 'react', 'stage-2']})
     .require('immutable', {expose: 'immutable'})
@@ -66,11 +71,11 @@ gulp.task('js', ['api-less', 'markdown'], () => {
     .pipe(gulp.dest(apiStaticDest + '/js'))
 })
 
-gulp.task('markdown', () => {
+gulp.task('md', () => {
   gulp.src(['./heim/doc/api.md'])
     .pipe(tap((file, t) => {
       if (file.isStream()) {
-        this.emit('error', new gutil.PluginError('markdown', 'stream not supported'))
+        this.emit('error', new gutil.PluginError('md', 'stream not supported'))
         return
       }
       let content = marked(file.contents.toString())
@@ -117,10 +122,10 @@ gulp.task('watchify', ['statics'], () => {
 
 gulp.task('watch', ['watchify'], () => {
   watching = true
-  gulp.watch('./index.html', ['markdown'])
-  gulp.watch('./heim/doc/api.md', ['markdown'])
-  gulp.watch('./css/*.less', ['api-less'])
-
+  gulp.watch('./index.html', ['md'])
+  gulp.watch('./heim/doc/api.md', ['md'])
+  gulp.watch('./heim/art/*.svg', ['img'])
+  gulp.watch('./css/*.less', ['css'])
 })
 
 gulp.task('default', ['statics'])
