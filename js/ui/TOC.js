@@ -3,21 +3,23 @@ import Reflux from 'reflux'
 
 import toc from '../store/toc'
 
+import TOCItem from './TOCItem'
+
 export default React.createClass({
-  displayName: 'toc',
+  displayName: 'TOC',
 
   mixins: [
     Reflux.connect(toc.store, 'toc'),
   ],
 
+  onChange(ev) {
+    window.location = ev.target.value
+  },
+
   render() {
     return (
-      <select id="toc">
-        {this.state.toc.items.toSeq().map(item=>
-          <option key={item.anchor.href} value={item.anchor.href}>
-            {''.repeat(item.depth)+item.anchor.text}
-          </option>
-        )}
+      <select id="toc-selector" onChange={this.onChange}>
+        {this.state.toc.items.map(item => <TOCItem key={item.anchor.href} item={item} />)}
       </select>
     )
   },

@@ -28,35 +28,41 @@ const store = module.exports.store = Reflux.createStore({
     //   look for ul to recurse on
     //
 
-    function visit(li, depth) {
+    function visit(group, li, depth) {
+      let item = {
+        depth: depth,
+      }
+
       let aElems = li.getElementsByTagName("a")
       if (aElems.length > 0) {
-        let item = {
-          anchor: aElems[0],
-          depth: depth,
-        }
-        console.log("adding item:", item.anchor.text)
-        items = items.push(item)
+        item.anchor = aElems[0]
       }
 
       let ulElems = li.getElementsByTagName("ul")
       if (ulElems.length > 0) {
-        visitUL(ulElems[0], depth+1)
+        item.children = visitUL(ulElems[0], depth+1)
       }
+
+      if (item.anchor || item.children) {
+        return group.push(item)
+      }
+
+      return group
     }
 
     function visitUL(ul, depth) {
+      let group = Immutable.List()
       for (var i = 0; i < ul.children.length; i++) {
         if (ul.children[i].tagName == "LI") {
-          visit(ul.children[i], depth+1)
+          group = visit(group, ul.children[i], depth+1)
         }
       }
+      return group
     }
 
     let ul = document.getElementsByTagName("ul")
     if (ul.length > 0) {
-      visitUL(ul[0], 0)
-      this.state.items = items
+      this.state.items = visitUL(ul[0], 0)
       this.trigger(this.state)
     }
   },
