@@ -44,10 +44,10 @@ body {
             color: #aaa;
         }
 
-        & > ul > li {
+        & > li {
             padding-bottom: 0.5em;
+
             & > a {
-                color: #aaa;
                 line-height: 2;
             }
         }
@@ -83,6 +83,14 @@ a {
     padding-left: 1em;
     padding-right: 1em;
     z-index: 1;
+}
+
+#toc optgroup {
+    text-transform: uppercase;
+
+    & option {
+        text-transform: none;
+    }
 }
 
 h1#table-of-contents { display: none; }
