@@ -2,8 +2,9 @@ body {
   font-family: 'Noto Sans', sans-serif;
   font-size: 12pt;
   height: 100vh;
+  width: 100vw;
   margin: 0 0 0 0;
-  overflow-y: hidden;
+  overflow: hidden;
   padding: 0 0 0 0;
   position: absolute;
   top: 0;
@@ -12,6 +13,7 @@ body {
 #api {
   position: relative;
   top: 0;
+  left: 0;
   bottom: 0;
   margin-top: 36pt;
   margin-left: 15em;
@@ -20,20 +22,19 @@ body {
   height: 100vh;
 }
 #api > ul {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15em;
+  height: 100vh;
+  margin-left: 0 !important;
+  padding-left: 1em !important;
   background: #333;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  display: block;
   font-size: 14px;
-  height: 100%;
-  margin-left: 0 !important;
-  margin-top: 0;
   overflow-y: auto;
-  padding-left: 1em !important;
-  position: fixed;
-  top: 36pt;
-  left: 0;
+  margin-bottom: 20em !important;
   text-transform: uppercase;
-  width: 15em;
 }
 #api > ul a {
   color: #aaa;
@@ -64,8 +65,7 @@ a {
   font-size: 16pt;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  width: 100vw;
   height: 36pt;
   line-height: 2;
   padding-left: 1em;
@@ -133,20 +133,28 @@ pre code {
   display: none;
 }
 @media (max-width: 1000px) {
+  body {
+    font-size: 3vmin;
+  }
   #toc {
     display: block;
     float: right;
     margin-right: 2em;
   }
   #toc select {
-    font-size: 12pt;
+    font-size: 3vmin;
   }
   #api {
-    margin-left: 0;
     padding-left: 1em;
+    padding-right: 1em;
+    margin-left: 0;
+    overflow-x: hidden;
   }
   #api > ul {
     display: none;
+  }
+  code {
+    font-size: 2vmin;
   }
 }
 @media (max-width: 480px) {
