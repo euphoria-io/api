@@ -40,14 +40,13 @@ function navigate() {
       if (selector.options[i].value === window.location.href) {
         if (selector.selectedIndex != i) {
           selector.selectedIndex = i;
-          //return
         }
       }
     }
 
     var api = document.getElementById('api');
     var elem = document.getElementById(target);
-    api.scrollTop = elem.offsetTop - 48;
+    api.scrollTop = elem.offsetTop - 64;
   }
 }
 
