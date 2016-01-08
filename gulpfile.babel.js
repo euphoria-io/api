@@ -49,11 +49,6 @@ gulp.task('css', () => {
     .pipe(gulp.dest(apiStaticDest + '/css'))
 })
 
-gulp.task('img', () => {
-  gulp.src(['./heim/art/logo-active.svg', './heim/art/logo-active-favicon.svg'])
-    .pipe(gulp.dest(apiStaticDest + '/img'))
-})
-
 gulp.task('js', ['css', 'md'], () => {
   browserify('./js/api.js', {debug: true})
     .transform(babelify, {presets: ['es2015', 'react', 'stage-2']})
