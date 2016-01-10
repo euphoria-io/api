@@ -37,10 +37,7 @@ export default React.createClass({
     let api = document.getElementById('api')
     let elem = document.getElementById(this.state.toc.current)
     if (api && elem) {
-      console.log('scroll to', elem.offsetTop)
       api.scrollTop = elem.offsetTop - 64
-    } else {
-      console.log('no api+elem to scroll')
     }
   },
 
@@ -72,7 +69,7 @@ export default React.createClass({
 
   componentDidMount() {
     if (!this.state.toc.current) {
-      let hash = window.location.hash || '#packets'
+      let hash = window.location.hash || '#overview'
       toc.setCurrent(hash.substr(1))
     }
     window.addEventListener('hashchange', this.onHashChange)

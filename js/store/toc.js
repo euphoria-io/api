@@ -83,7 +83,7 @@ const store = module.exports.store = Reflux.createStore({
       key = k
       return 1
     })
-    if (key && key !== this.state.scrolledTo && !this.state.groups.has(key)) {
+    if (key && key !== this.state.scrolledTo /*&& !this.state.groups.has(key)*/) {
       this.state.scrolledTo = key
       this.trigger(this.state)
     }

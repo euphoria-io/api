@@ -22,11 +22,11 @@ export default React.createClass({
       <div id="nav-left">
         <ul>
           {this.state.toc.groups.valueSeq().map(group =>
-            <li className={this.getClassName(group.id)}>
+            <li key={group.id} className={this.getClassName(group.id)}>
               <a href={'#'+group.id}>{group.label}</a>
               <ul>
                 {group.sections.map(section =>
-                  <li className={this.getClassName(section.id)}>
+                  <li key={section.id} className={this.getClassName(section.id)}>
                     <a href={'#'+section.id}>{section.label}</a>
                   </li>
                 )}

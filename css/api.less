@@ -46,6 +46,10 @@ ul {
     padding-left: 1em;
     padding-right: 1em;
     overflow-y: scroll;
+
+    #table-of-contents, & > ul {
+        display: none;
+    }
 }
 
 #nav-left > ul, #api > ul {
@@ -70,7 +74,6 @@ ul {
     background: #333;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     font-size: 14px;
-    padding-left: 0.5em;
     overflow-y: scroll;
     z-index: 1;
 
@@ -85,24 +88,23 @@ ul {
         padding-left: 0;
 
         li {
-            &.current {
+            &.current > a {
                 background: #ccc;
-                & a {
-                    color: #333;
-                }
+                color: #333;
             }
 
             a {
-                padding-left: 0.5em;
+                padding-left: 1em;
             }
         }
 
         ul li {
             font-size: 12px;
             text-transform: none;
+            line-height: 1.5;
 
             a {
-                padding-left: 2em;
+                padding-left: 2.5em;
             }
         }
 

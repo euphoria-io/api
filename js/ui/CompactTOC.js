@@ -16,9 +16,14 @@ export default React.createClass({
   },
 
   componentDidUpdate() {
-    if (this.state.toc.scrolledTo) {
+    let value = this.state.toc.scrolledTo
+    if (value) {
       let elem = ReactDOM.findDOMNode(this)
-      elem.value = this.state.toc.scrolledTo
+      if (this.state.toc.groups.has(value)) {
+        let first = this.state.toc.groups.get(value).sections.first()
+        value = first && first.id
+      }
+      elem.value = value
     }
   },
 

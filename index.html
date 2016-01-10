@@ -7,11 +7,16 @@
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/api.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <script async src="/js/main.js"></script>
   </head>
   <body>
     <div id="content">
-      @@api
+      <div id="noscript">
+        @@api
+      </div>
     </div>
-    <script src="/js/main.js"></script>
+    <script>
+      document.getElementById('noscript').style['display'] = 'none'
+    </script>
   </body>
 </html>

@@ -7,10 +7,11 @@ import Api from './ui/Api'
 const loadedStates = ['complete', 'loaded', 'interactive']
 
 function run() {
+  let noscriptElem = document.getElementById('noscript')
   let contentElem = document.getElementById('content')
-  let tocElem = contentElem.getElementsByTagName('ul')[0]
-  tocElem.remove()
-  ReactDOM.render(<Api content={contentElem.innerHTML}/>, contentElem)
+  let content = contentElem.innerHTML
+  noscriptElem.remove()
+  ReactDOM.render(<Api content={noscriptElem.innerHTML}/>, contentElem)
 }
 
 if (loadedStates.includes(document.readyState) && document.body) {
