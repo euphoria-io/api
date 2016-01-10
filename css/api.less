@@ -29,11 +29,31 @@ body {
 }
 
 #nav {
+    display: flex;
+    align-items: center;
     background: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     font-size: @nav-font-size;
-    line-height: 2;
+    line-height: 2.5;
     z-index: 2;
+
+    .logo {
+    }
+
+    #compact-toc {
+        display: none;
+        flex: 1;
+        font-size: @base-font-size;
+        margin-right: 1em;
+        text-align: right;
+
+        #toc-selector optgroup {
+            text-transform: uppercase;
+            & option {
+                text-transform: none;
+            }
+        }
+    }
 }
 
 #bottom {
@@ -142,14 +162,6 @@ a {
     }
 }
 
-#toc-selector optgroup {
-    text-transform: uppercase;
-
-    & option {
-        text-transform: none;
-    }
-}
-
 h1#table-of-contents { display: none; }
 
 table {
@@ -188,45 +200,23 @@ pre code {
     padding: 1.5em 1.5em 1.5em 1.5em;
 }
 
-#toc-selector { display: none; }
-
 @media (max-width: @mobile-breakpoint) {
     body {
         font-size: @mobile-base-font-size;
     }
 
-    #compact-toc {
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: @nav-height;
-        display: flex;
-        justify-content: right;
-        align-items: center;
-    }
-
-    #toc-selector {
-        display: block;
-        margin-right: 2em;
-        font-size: @base-font-size;
-    }
-
-    #nav-left { display: none; }
-
-    #api {
-        //margin-left: 0;
-        //padding-left: 1em;
-        //padding-right: 1em;
-        //margin-left: 0;
-        //overflow-x: hidden;
-    }
-
     code {
         font-size: @mobile-code-font-size;
     }
+
+    #compact-toc {
+        display: block !important;
+    }
+
+    #nav-left { display: none; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 450px) {
     #nav .logo a {
         display: inline-block;
         overflow: hidden;
