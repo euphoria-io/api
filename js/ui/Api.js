@@ -60,7 +60,8 @@ export default React.createClass({
     let api = document.getElementById('api')
     let elems = api.querySelectorAll('h1, h2')
 
-    for (var i = 0; i < elems.length; i++) {
+    // Skip first item ("Table of Contents" header)
+    for (var i = 1; i < elems.length; i++) {
       if (elems[i].tagName == 'H1') {
         toc.startGroup(elems[i].id, elems[i].innerHTML, elems[i].offsetTop)
       } else {
@@ -71,7 +72,8 @@ export default React.createClass({
 
   componentDidMount() {
     if (!this.state.toc.current) {
-      toc.setCurrent(window.location.hash.substr(1))
+      let hash = window.location.hash || '#packets'
+      toc.setCurrent(hash.substr(1))
     }
     window.addEventListener('hashchange', this.onHashChange)
     this.reindex()
@@ -90,6 +92,5 @@ export default React.createClass({
 
   componentDidUpdate() {
     this.scrollTo()
-    //this.reindex()
   },
 })
