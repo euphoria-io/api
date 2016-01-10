@@ -206,7 +206,8 @@ exports.default = _react2.default.createClass({
     var api = document.getElementById('api');
     var elems = api.querySelectorAll('h1, h2');
 
-    for (var i = 0; i < elems.length; i++) {
+    // Skip first item ("Table of Contents" header)
+    for (var i = 1; i < elems.length; i++) {
       if (elems[i].tagName == 'H1') {
         _toc2.default.startGroup(elems[i].id, elems[i].innerHTML, elems[i].offsetTop);
       } else {
@@ -216,7 +217,8 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     if (!this.state.toc.current) {
-      _toc2.default.setCurrent(window.location.hash.substr(1));
+      var hash = window.location.hash || '#packets';
+      _toc2.default.setCurrent(hash.substr(1));
     }
     window.addEventListener('hashchange', this.onHashChange);
     this.reindex();
@@ -232,7 +234,6 @@ exports.default = _react2.default.createClass({
   },
   componentDidUpdate: function componentDidUpdate() {
     this.scrollTo();
-    //this.reindex()
   }
 });
 
