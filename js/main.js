@@ -307,6 +307,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
 var _reflux = require('reflux');
 
 var _reflux2 = _interopRequireDefault(_reflux);
@@ -369,14 +373,31 @@ exports.default = _react2.default.createClass({
   },
   getClassName: function getClassName(id) {
     if (id === this.state.toc.scrolledTo) {
-      return "current";
+      return 'current';
     } else {
-      return "";
+      return '';
+    }
+  },
+  componentDidUpdate: function componentDidUpdate() {
+    var nav = _reactDom2.default.findDOMNode(this);
+    var margin = 0.15 * nav.scrollHeight;
+    var elems = nav.querySelectorAll('.current');
+    if (!elems) {
+      return;
+    }
+    var e = elems[0];
+    if (!e) {
+      return;
+    }
+    if (nav.scrollTop + margin > e.offsetTop) {
+      nav.scrollTop = e.offsetTop - margin;
+    } else if (nav.scrollTop + nav.offsetHeight - margin < e.offsetTop + e.offsetHeight) {
+      nav.scrollTop = e.offsetTop + e.offsetHeight + margin - nav.offsetHeight;
     }
   }
 });
 
-},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","./NavLeft":"/mnt/shared/heim-api/js/ui/NavLeft.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/NavTop.js":[function(require,module,exports){
+},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","./NavLeft":"/mnt/shared/heim-api/js/ui/NavLeft.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","react-dom":"/mnt/shared/heim-api/node_modules/react-dom/index.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/NavTop.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
