@@ -29,7 +29,7 @@ function run() {
   _reactDom2.default.render(_react2.default.createElement(_Api2.default, { content: noscriptElem.innerHTML }), contentElem);
 }
 
-if (loadedStates.includes(document.readyState) && document.body) {
+if (loadedStates.indexOf(document.readyState) >= 0 && document.body) {
   run();
 } else {
   window.addEventListener('DOMContentLoaded', run, false);
