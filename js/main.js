@@ -22,10 +22,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var loadedStates = ['complete', 'loaded', 'interactive'];
 
 function run() {
+  var noscriptElem = document.getElementById('noscript');
   var contentElem = document.getElementById('content');
-  var tocElem = contentElem.getElementsByTagName('ul')[0];
-  tocElem.remove();
-  _reactDom2.default.render(_react2.default.createElement(_Api2.default, { content: contentElem.innerHTML }), contentElem);
+  var content = contentElem.innerHTML;
+  noscriptElem.remove();
+  _reactDom2.default.render(_react2.default.createElement(_Api2.default, { content: noscriptElem.innerHTML }), contentElem);
 }
 
 if (loadedStates.includes(document.readyState) && document.body) {
@@ -121,10 +122,10 @@ var store = module.exports.store = _reflux2.default.createStore({
       key = k;
       return 1;
     });
-    if (key && key !== this.state.scrolledTo && !this.state.groups.has(key)) {
-      this.state.scrolledTo = key;
-      this.trigger(this.state);
-    }
+    if (key && key !== this.state.scrolledTo /*&& !this.state.groups.has(key)*/) {
+        this.state.scrolledTo = key;
+        this.trigger(this.state);
+      }
   }
 });
 
@@ -183,10 +184,7 @@ exports.default = _react2.default.createClass({
     var api = document.getElementById('api');
     var elem = document.getElementById(this.state.toc.current);
     if (api && elem) {
-      console.log('scroll to', elem.offsetTop);
       api.scrollTop = elem.offsetTop - 64;
-    } else {
-      console.log('no api+elem to scroll');
     }
   },
   render: function render() {
@@ -217,7 +215,7 @@ exports.default = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     if (!this.state.toc.current) {
-      var hash = window.location.hash || '#packets';
+      var hash = window.location.hash || '#overview';
       _toc2.default.setCurrent(hash.substr(1));
     }
     window.addEventListener('hashchange', this.onHashChange);
@@ -271,9 +269,14 @@ exports.default = _react2.default.createClass({
     window.location.hash = '#' + ev.target.value;
   },
   componentDidUpdate: function componentDidUpdate() {
-    if (this.state.toc.scrolledTo) {
+    var value = this.state.toc.scrolledTo;
+    if (value) {
       var elem = _reactDom2.default.findDOMNode(this);
-      elem.value = this.state.toc.scrolledTo;
+      if (this.state.toc.groups.has(value)) {
+        var first = this.state.toc.groups.get(value).sections.first();
+        value = first && first.id;
+      }
+      elem.value = value;
     }
   },
   render: function render() {
@@ -346,7 +349,7 @@ exports.default = _react2.default.createClass({
         this.state.toc.groups.valueSeq().map(function (group) {
           return _react2.default.createElement(
             'li',
-            { className: _this.getClassName(group.id) },
+            { key: group.id, className: _this.getClassName(group.id) },
             _react2.default.createElement(
               'a',
               { href: '#' + group.id },
@@ -358,7 +361,7 @@ exports.default = _react2.default.createClass({
               group.sections.map(function (section) {
                 return _react2.default.createElement(
                   'li',
-                  { className: _this.getClassName(section.id) },
+                  { key: section.id, className: _this.getClassName(section.id) },
                   _react2.default.createElement(
                     'a',
                     { href: '#' + section.id },
