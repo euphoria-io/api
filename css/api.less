@@ -5,6 +5,11 @@
 @mobile-code-font-size: 2vmin;
 @nav-font-size: 16pt;
 @nav-height: 36pt;
+@toc-background: #333;
+@toc-color: #aaa;
+@toc-group-font-size: 14px;
+@toc-section-font-size: 12px;
+@toc-highlight: #ccc;
 @toc-width: 15em;
 
 body {
@@ -38,6 +43,7 @@ body {
 }
 
 ul {
+    list-style: none;
     padding: 0 0 0 0;
     margin-left: 1em;
 }
@@ -52,12 +58,11 @@ ul {
     }
 }
 
-#nav-left > ul, #api > ul {
-    list-style: none;
+#nav-left > ul, #api > ul, #noscript > ul {
     text-transform: uppercase;
 
     a {
-        color: #aaa;
+        color: @toc-color;
     }
 
     & > li {
@@ -69,11 +74,11 @@ ul {
     }
 }
 
-#nav-left {
+#nav-left, #noscript > ul {
     min-width: @toc-width;
-    background: #333;
+    background: @toc-background;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    font-size: 14px;
+    font-size: @toc-group-font-size;
     overflow-y: scroll;
     z-index: 1;
 
@@ -89,8 +94,8 @@ ul {
 
         li {
             &.current > a {
-                background: #ccc;
-                color: #333;
+                background: @toc-highlight;
+                color: @toc-background;
             }
 
             a {
@@ -99,7 +104,7 @@ ul {
         }
 
         ul li {
-            font-size: 12px;
+            font-size: @toc-section-font-size;
             text-transform: none;
             line-height: 1.5;
 
@@ -120,7 +125,7 @@ a {
     display: inline-block;
 
     a {
-        color: #333;
+        color: @toc-background;
         font-weight: bold;
         margin-left: 1em;
 
@@ -227,5 +232,30 @@ pre code {
         overflow: hidden;
         height: 2em;
         width: 2em;
+    }
+}
+
+#noscript {
+    margin-left: 2em;
+    padding-left: @toc-width;
+    overflow-y: auto;
+
+    & > ul {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow-y: auto;
+        margin-left: 0;
+        margin-top: 0;
+        padding-top: 1em;
+        padding-left: 1em;
+        font-family: 'Noto Sans', sans-serif;
+        font-size: @toc-group-font-size;
+
+        ul li {
+            font-size: @toc-section-font-size;
+            text-transform: none;
+        }
     }
 }
