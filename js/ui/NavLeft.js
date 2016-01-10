@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import Reflux from 'reflux'
 
 import toc from '../store/toc'
@@ -39,10 +40,27 @@ export default React.createClass({
 
   getClassName(id) {
     if (id === this.state.toc.scrolledTo) {
-      return "current"
+      return 'current'
     } else {
-      return ""
+      return ''
+    }
+  },
+
+  componentDidUpdate() {
+    let nav = ReactDOM.findDOMNode(this)
+    let margin = 0.15 * nav.scrollHeight
+    let elems = nav.querySelectorAll('.current')
+    if (!elems) {
+      return
+    }
+    let e = elems[0]
+    if (!e) {
+      return
+    }
+    if (nav.scrollTop+margin > e.offsetTop) {
+      nav.scrollTop = e.offsetTop-margin
+    } else if (nav.scrollTop+nav.offsetHeight-margin < e.offsetTop+e.offsetHeight) {
+      nav.scrollTop = e.offsetTop+e.offsetHeight+margin-nav.offsetHeight
     }
   },
 })
-
