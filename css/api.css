@@ -1,82 +1,116 @@
 body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
   font-family: 'Noto Sans', sans-serif;
   font-size: 12pt;
-  height: 100vh;
-  width: 100vw;
-  margin: 0 0 0 0;
   overflow: hidden;
-  padding: 0 0 0 0;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
-#api {
-  position: relative;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  margin-top: 36pt;
-  margin-left: 15em;
-  padding-right: 1em;
-  overflow-y: scroll;
+#content > div {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
   height: 100vh;
-}
-#api > ul {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 15em;
-  height: 100vh;
-  margin-left: 0 !important;
-  padding-left: 1em !important;
-  background: #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  font-size: 14px;
-  overflow-y: auto;
-  margin-bottom: 20em !important;
-  text-transform: uppercase;
-}
-#api > ul a {
-  color: #aaa;
-}
-#api > ul > li {
-  padding-bottom: 0.5em;
-}
-#api > ul > li > a {
-  line-height: 2;
-}
-#api ul {
-  margin-bottom: 0;
-  margin-left: 1em;
-  list-style: none;
-  padding-left: 0px;
-}
-#api ul ul li {
-  font-size: 12px;
-  text-transform: none;
-}
-a {
-  color: #39c;
-  text-decoration: none;
 }
 #nav {
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   font-size: 16pt;
-  position: fixed;
-  top: 0;
-  width: 100vw;
-  height: 36pt;
   line-height: 2;
+  z-index: 2;
+}
+#bottom {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  overflow: hidden;
+}
+ul {
+  padding: 0 0 0 0;
+  margin-left: 1em;
+}
+#api {
   padding-left: 1em;
   padding-right: 1em;
+  overflow-y: scroll;
+}
+#nav-left > ul,
+#api > ul {
+  list-style: none;
+  text-transform: uppercase;
+}
+#nav-left > ul a,
+#api > ul a {
+  color: #aaa;
+}
+#nav-left > ul > li,
+#api > ul > li {
+  padding-bottom: 0.5em;
+}
+#nav-left > ul > li > a,
+#api > ul > li > a {
+  line-height: 2;
+}
+#nav-left {
+  min-width: 15em;
+  background: #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  padding-left: 0.5em;
+  overflow-y: scroll;
   z-index: 1;
 }
+#nav-left a {
+  display: block;
+}
+#nav-left ul {
+  margin-bottom: 0;
+  margin-left: 0;
+  list-style: none;
+  padding-left: 0;
+}
+#nav-left ul li.current {
+  background: #ccc;
+}
+#nav-left ul li.current a {
+  color: #333;
+}
+#nav-left ul li a {
+  padding-left: 0.5em;
+}
+#nav-left ul ul li {
+  font-size: 12px;
+  text-transform: none;
+}
+#nav-left ul ul li a {
+  padding-left: 2em;
+}
+a {
+  color: #39c;
+  text-decoration: none;
+}
 .logo {
+  display: inline-block;
+}
+.logo a {
   color: #333;
   font-weight: bold;
+  margin-left: 1em;
 }
-.logo:before {
+.logo a:before {
   content: '';
   display: inline-block;
   width: 1.5em;
@@ -86,10 +120,10 @@ a {
   background-size: contain;
   vertical-align: middle;
 }
-#toc optgroup {
+#toc-selector optgroup {
   text-transform: uppercase;
 }
-#toc optgroup option {
+#toc-selector optgroup option {
   text-transform: none;
 }
 h1#table-of-contents {
@@ -129,28 +163,37 @@ pre code {
   line-height: 1.45;
   padding: 1.5em 1.5em 1.5em 1.5em;
 }
-#toc {
+#toc-selector {
   display: none;
 }
 @media (max-width: 1000px) {
   body {
     font-size: 3vmin;
   }
-  #toc {
+  #compact-toc {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 36pt;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: right;
+    -webkit-justify-content: right;
+    -ms-flex-pack: right;
+    justify-content: right;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+  #toc-selector {
     display: block;
-    float: right;
     margin-right: 2em;
+    font-size: 12pt;
   }
-  #toc select {
-    font-size: 3vmin;
-  }
-  #api {
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-left: 0;
-    overflow-x: hidden;
-  }
-  #api > ul {
+  #nav-left {
     display: none;
   }
   code {
@@ -158,7 +201,7 @@ pre code {
   }
 }
 @media (max-width: 480px) {
-  #nav .logo {
+  #nav .logo a {
     display: inline-block;
     overflow: hidden;
     height: 2em;

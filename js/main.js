@@ -13,41 +13,19 @@ var _toc = require('./store/toc');
 
 var _toc2 = _interopRequireDefault(_toc);
 
-var _TOC = require('./ui/TOC');
+var _Api = require('./ui/Api');
 
-var _TOC2 = _interopRequireDefault(_TOC);
+var _Api2 = _interopRequireDefault(_Api);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loadedStates = ['complete', 'loaded', 'interactive'];
 
 function run() {
-  _toc2.default.load();
-  _reactDom2.default.render(_react2.default.createElement(_TOC2.default, null), document.getElementById('toc'));
-  window.addEventListener('hashchange', navigate, false);
-  navigate();
-}
-
-function navigate() {
-  var hash = window.location.hash;
-
-  if (hash && hash[0] == '#') {
-    var target = hash.substr(1);
-
-    console.log('navigate to', window.location.href);
-    var selector = document.getElementById('toc-selector');
-    for (var i = 0; i < selector.options.length; i++) {
-      if (selector.options[i].value === window.location.href) {
-        if (selector.selectedIndex != i) {
-          selector.selectedIndex = i;
-        }
-      }
-    }
-
-    var api = document.getElementById('api');
-    var elem = document.getElementById(target);
-    api.scrollTop = elem.offsetTop - 64;
-  }
+  var contentElem = document.getElementById('content');
+  var tocElem = contentElem.getElementsByTagName('ul')[0];
+  tocElem.remove();
+  _reactDom2.default.render(_react2.default.createElement(_Api2.default, { content: contentElem.innerHTML }), contentElem);
 }
 
 if (loadedStates.includes(document.readyState) && document.body) {
@@ -56,7 +34,7 @@ if (loadedStates.includes(document.readyState) && document.body) {
   window.addEventListener('DOMContentLoaded', run, false);
 }
 
-},{"./store/toc":"/mnt/shared/heim-api/js/store/toc.js","./ui/TOC":"/mnt/shared/heim-api/js/ui/TOC.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","react-dom":"/mnt/shared/heim-api/node_modules/react-dom/index.js"}],"/mnt/shared/heim-api/js/store/toc.js":[function(require,module,exports){
+},{"./store/toc":"/mnt/shared/heim-api/js/store/toc.js","./ui/Api":"/mnt/shared/heim-api/js/ui/Api.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","react-dom":"/mnt/shared/heim-api/node_modules/react-dom/index.js"}],"/mnt/shared/heim-api/js/store/toc.js":[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash');
@@ -73,7 +51,7 @@ var _reflux2 = _interopRequireDefault(_reflux);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var storeActions = _reflux2.default.createActions(['load']);
+var storeActions = _reflux2.default.createActions(['addSection', 'load', 'scrollTo', 'setCurrent', 'startGroup']);
 _lodash2.default.extend(module.exports, storeActions);
 
 var store = module.exports.store = _reflux2.default.createStore({
@@ -81,61 +59,76 @@ var store = module.exports.store = _reflux2.default.createStore({
 
   init: function init() {
     this.state = {
-      items: _immutable2.default.List()
+      index: _immutable2.default.OrderedMap(),
+      groups: _immutable2.default.OrderedMap(),
+      current: null,
+      scrolledTo: null,
+      offset: 0
     };
   },
   getInitialState: function getInitialState() {
     return this.state;
   },
-  load: function load() {
-    var items = _immutable2.default.List();
-
-    // for each li:
-    //   get inner text of a for label
-    //   look for ul to recurse on
-    //
-
-    function visit(group, li, depth) {
-      var item = {
-        depth: depth
-      };
-
-      var aElems = li.getElementsByTagName("a");
-      if (aElems.length > 0) {
-        item.anchor = aElems[0];
-      }
-
-      var ulElems = li.getElementsByTagName("ul");
-      if (ulElems.length > 0) {
-        item.children = visitUL(ulElems[0], depth + 1);
-      }
-
-      if (item.anchor || item.children) {
-        return group.push(item);
-      }
-
-      return group;
+  startGroup: function startGroup(id, label, offsetTop) {
+    if (this.state.index.has(id)) {
+      return;
     }
 
-    function visitUL(ul, depth) {
-      var group = _immutable2.default.List();
-      for (var i = 0; i < ul.children.length; i++) {
-        if (ul.children[i].tagName == "LI") {
-          group = visit(group, ul.children[i], depth + 1);
-        }
+    var group = {
+      id: id,
+      label: label,
+      sections: _immutable2.default.List()
+    };
+
+    this.state.index = this.state.index.set(id, offsetTop);
+    this.state.groups = this.state.groups.set(id, group);
+    this.trigger(this.state);
+  },
+  addSection: function addSection(id, label, offsetTop) {
+    var known = this.state.index.get(id);
+    if (known !== undefined) {
+      if (offsetTop != known) {
+        this.state.index.set(id, offsetTop);
+        this.trigger(this.state);
       }
-      return group;
+      return;
     }
 
-    var ul = document.getElementsByTagName("ul");
-    if (ul.length > 0) {
-      this.state.items = visitUL(ul[0], 0);
+    this.state.index = this.state.index.set(id, offsetTop);
+
+    var group = this.state.groups.last();
+    var section = {
+      id: id,
+      label: label
+    };
+    group.sections = group.sections.push(section);
+    this.state.groups = this.state.groups.set(group.id, group);
+    this.trigger(this.state);
+  },
+  setCurrent: function setCurrent(id) {
+    this.state.current = id;
+    this.state.scrolledTo = id;
+    this.state.offset = this.state.index.get(this.state.current, 0);
+    this.trigger(this.state);
+  },
+  scrollTo: function scrollTo(offset) {
+    var key = undefined;
+    this.state.index.forEach(function (v, k, i) {
+      var elem = document.getElementById(k);
+      if (elem && elem.offsetTop > offset + 65) {
+        return 0;
+      }
+      key = k;
+      return 1;
+    });
+    if (key && key !== this.state.scrolledTo && !this.state.groups.has(key)) {
+      this.state.scrolledTo = key;
       this.trigger(this.state);
     }
   }
 });
 
-},{"immutable":"/mnt/shared/heim-api/node_modules/immutable/dist/immutable.js","lodash":"/mnt/shared/heim-api/node_modules/lodash/index.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/TOC.js":[function(require,module,exports){
+},{"immutable":"/mnt/shared/heim-api/node_modules/immutable/dist/immutable.js","lodash":"/mnt/shared/heim-api/node_modules/lodash/index.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/Api.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -154,41 +147,161 @@ var _toc = require('../store/toc');
 
 var _toc2 = _interopRequireDefault(_toc);
 
-var _TOCItem = require('./TOCItem');
+var _NavLeft = require('./NavLeft');
 
-var _TOCItem2 = _interopRequireDefault(_TOCItem);
+var _NavLeft2 = _interopRequireDefault(_NavLeft);
+
+var _NavTop = require('./NavTop');
+
+var _NavTop2 = _interopRequireDefault(_NavTop);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
-  displayName: 'TOC',
+  displayName: 'Api',
+
+  propTypes: {
+    content: _react2.default.PropTypes.string
+  },
 
   mixins: [_reflux2.default.connect(_toc2.default.store, 'toc')],
 
-  onChange: function onChange(ev) {
-    window.location = ev.target.value;
+  init: function init() {
+    this._offset = 0;
+  },
+  onHashChange: function onHashChange(ev) {
+    var hash = window.location.hash;
+    if (hash && hash[0] == '#') {
+      _toc2.default.setCurrent(hash.substr(1));
+    }
+  },
+  onScroll: function onScroll(ev) {
+    _toc2.default.scrollTo(ev.target.scrollTop);
+  },
+  scrollTo: function scrollTo() {
+    this._offset = this.state.toc.offset;
+    var api = document.getElementById('api');
+    var elem = document.getElementById(this.state.toc.current);
+    if (api && elem) {
+      console.log('scroll to', elem.offsetTop);
+      api.scrollTop = elem.offsetTop - 64;
+    } else {
+      console.log('no api+elem to scroll');
+    }
   },
   render: function render() {
     return _react2.default.createElement(
-      'select',
-      { id: 'toc-selector', onChange: this.onChange },
-      this.state.toc.items.map(function (item) {
-        return _react2.default.createElement(_TOCItem2.default, { key: item.anchor.href, item: item });
-      })
+      'div',
+      null,
+      _react2.default.createElement(_NavTop2.default, null),
+      _react2.default.createElement(
+        'div',
+        { id: 'bottom' },
+        _react2.default.createElement(_NavLeft2.default, null),
+        _react2.default.createElement('div', { id: 'api', dangerouslySetInnerHTML: { __html: this.props.content }, onScroll: this.onScroll })
+      )
     );
+  },
+  reindex: function reindex() {
+    var api = document.getElementById('api');
+    var elems = api.querySelectorAll('h1, h2');
+
+    for (var i = 0; i < elems.length; i++) {
+      if (elems[i].tagName == 'H1') {
+        _toc2.default.startGroup(elems[i].id, elems[i].innerHTML, elems[i].offsetTop);
+      } else {
+        _toc2.default.addSection(elems[i].id, elems[i].innerHTML, elems[i].offsetTop);
+      }
+    }
+  },
+  componentDidMount: function componentDidMount() {
+    if (!this.state.toc.current) {
+      _toc2.default.setCurrent(window.location.hash.substr(1));
+    }
+    window.addEventListener('hashchange', this.onHashChange);
+    this.reindex();
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    window.removeEventListener('hashchange', this.onHashChange);
+  },
+  shouldComponentUpdate: function shouldComponentUpdate() {
+    if (this._offset === this.state.toc.offset) {
+      return false;
+    }
+    return true;
+  },
+  componentDidUpdate: function componentDidUpdate() {
+    this.scrollTo();
+    //this.reindex()
   }
 });
 
-},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","./TOCItem":"/mnt/shared/heim-api/js/ui/TOCItem.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/TOCItem.js":[function(require,module,exports){
+},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","./NavLeft":"/mnt/shared/heim-api/js/ui/NavLeft.js","./NavTop":"/mnt/shared/heim-api/js/ui/NavTop.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/CompactTOC.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _immutable = require('immutable');
+var _react = require('react');
 
-var _immutable2 = _interopRequireDefault(_immutable);
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _reflux = require('reflux');
+
+var _reflux2 = _interopRequireDefault(_reflux);
+
+var _toc = require('../store/toc');
+
+var _toc2 = _interopRequireDefault(_toc);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createClass({
+  displayName: 'CompactTOC',
+
+  mixins: [_reflux2.default.connect(_toc2.default.store, 'toc')],
+
+  onChange: function onChange(ev) {
+    window.location.hash = '#' + ev.target.value;
+  },
+  componentDidUpdate: function componentDidUpdate() {
+    if (this.state.toc.scrolledTo) {
+      var elem = _reactDom2.default.findDOMNode(this);
+      elem.value = this.state.toc.scrolledTo;
+    }
+  },
+  render: function render() {
+    return _react2.default.createElement(
+      'select',
+      { id: 'toc-selector', onChange: this.onChange },
+      this.state.toc.groups.valueSeq().map(function (group) {
+        return _react2.default.createElement(
+          'optgroup',
+          { key: group.id, label: group.label },
+          group.sections.map(function (section) {
+            return _react2.default.createElement(
+              'option',
+              { key: section.id, value: section.id },
+              section.label
+            );
+          })
+        );
+      })
+    );
+  }
+});
+
+},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","react-dom":"/mnt/shared/heim-api/node_modules/react-dom/index.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/NavLeft.js":[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _react = require('react');
 
@@ -198,37 +311,118 @@ var _reflux = require('reflux');
 
 var _reflux2 = _interopRequireDefault(_reflux);
 
+var _toc = require('../store/toc');
+
+var _toc2 = _interopRequireDefault(_toc);
+
+var _NavLeft = require('./NavLeft');
+
+var _NavLeft2 = _interopRequireDefault(_NavLeft);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TOCItem = _react2.default.createClass({
-  displayName: 'TOCItem',
+exports.default = _react2.default.createClass({
+  displayName: 'NavLeft',
 
-  propTypes: {
-    item: _react2.default.PropTypes.object
+  mixins: [_reflux2.default.connect(_toc2.default.store, 'toc')],
+
+  onChange: function onChange(ev) {
+    window.location.hash = '#' + ev.target.value;
   },
-
   render: function render() {
-    var item = this.props.item;
-    if (item.children) {
-      return _react2.default.createElement(
-        'optgroup',
-        { label: item.anchor.text },
-        item.children.map(function (x) {
-          return _react2.default.createElement(TOCItem, { key: x.anchor.href, item: x });
-        })
-      );
-    }
+    var _this = this;
 
     return _react2.default.createElement(
-      'option',
-      { key: item.anchor.href, value: item.anchor.href },
-      item.anchor.text
+      'div',
+      { id: 'nav-left' },
+      _react2.default.createElement(
+        'ul',
+        null,
+        this.state.toc.groups.valueSeq().map(function (group) {
+          return _react2.default.createElement(
+            'li',
+            { className: _this.getClassName(group.id) },
+            _react2.default.createElement(
+              'a',
+              { href: '#' + group.id },
+              group.label
+            ),
+            _react2.default.createElement(
+              'ul',
+              null,
+              group.sections.map(function (section) {
+                return _react2.default.createElement(
+                  'li',
+                  { className: _this.getClassName(section.id) },
+                  _react2.default.createElement(
+                    'a',
+                    { href: '#' + section.id },
+                    section.label
+                  )
+                );
+              })
+            )
+          );
+        })
+      )
+    );
+  },
+  getClassName: function getClassName(id) {
+    if (id === this.state.toc.scrolledTo) {
+      return "current";
+    } else {
+      return "";
+    }
+  }
+});
+
+},{"../store/toc":"/mnt/shared/heim-api/js/store/toc.js","./NavLeft":"/mnt/shared/heim-api/js/ui/NavLeft.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/js/ui/NavTop.js":[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reflux = require('reflux');
+
+var _reflux2 = _interopRequireDefault(_reflux);
+
+var _CompactTOC = require('./CompactTOC');
+
+var _CompactTOC2 = _interopRequireDefault(_CompactTOC);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createClass({
+  displayName: 'NavTop',
+
+  render: function render() {
+    return _react2.default.createElement(
+      'div',
+      { id: 'nav' },
+      _react2.default.createElement(
+        'div',
+        { className: 'logo' },
+        _react2.default.createElement(
+          'a',
+          { href: '/' },
+          'Euphoria API'
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { id: 'compact-toc' },
+        _react2.default.createElement(_CompactTOC2.default, null)
+      )
     );
   }
 });
-exports.default = TOCItem;
 
-},{"immutable":"/mnt/shared/heim-api/node_modules/immutable/dist/immutable.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"./CompactTOC":"/mnt/shared/heim-api/js/ui/CompactTOC.js","react":"/mnt/shared/heim-api/node_modules/react/react.js","reflux":"/mnt/shared/heim-api/node_modules/reflux/src/index.js"}],"/mnt/shared/heim-api/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
