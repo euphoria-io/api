@@ -2,37 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import toc from './store/toc'
-import TOC from './ui/TOC'
+import Api from './ui/Api'
 
 const loadedStates = ['complete', 'loaded', 'interactive']
 
 function run() {
-  toc.load()
-  ReactDOM.render(<TOC />, document.getElementById('toc'))
-  window.addEventListener('hashchange', navigate, false)
-  navigate()
-}
-
-function navigate() {
-  const hash = window.location.hash
-
-  if (hash && hash[0] == '#') {
-    const target = hash.substr(1)
-
-    console.log('navigate to', window.location.href)
-    let selector = document.getElementById('toc-selector')
-    for (var i = 0; i < selector.options.length; i++) {
-      if (selector.options[i].value === window.location.href) {
-        if (selector.selectedIndex != i) {
-          selector.selectedIndex = i
-        }
-      }
-    }
-
-    let api = document.getElementById('api')
-    let elem = document.getElementById(target)
-    api.scrollTop = elem.offsetTop - 64
-  }
+  let contentElem = document.getElementById('content')
+  let tocElem = contentElem.getElementsByTagName('ul')[0]
+  tocElem.remove()
+  ReactDOM.render(<Api content={contentElem.innerHTML}/>, contentElem)
 }
 
 if (loadedStates.includes(document.readyState) && document.body) {
